@@ -1,5 +1,5 @@
-div {
-    border-radius: 5%;
+.cell {
+    border-radius: 10%;
     display: inline;
     position: absolute;
     border: 1px solid black;

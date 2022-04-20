@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { VertexBlock } from './VertexBlock.js';
+import './Game.css'
 
 export const Game = (props) => {
 
@@ -10,7 +11,7 @@ export const Game = (props) => {
     return (
         <div>
             {vertices.map((row) => (row.map((vertex, i) => <VertexBlock key = {i} 
-            vertex = {vertex} cellSize = {'20'}/>)))}
+            vertex = {vertex} cellSize = {40}/>)))}
         </div>
     );
 }

@@ -2,7 +2,7 @@ class Vertex {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.color = "black";
+        this.color = "white";
         this.left = null;
         this.right = null;
         this.top = null;
