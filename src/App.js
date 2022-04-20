@@ -4,8 +4,8 @@ import Game from './components/Game.js'
 
 function App() {
   return (
-    <div>
-    <Game game = {new Maze(10, 10)}/>
+    <div className='main'>
+    <Game game = {new Maze(3, 3)}/>
     </div>
   );
 }
