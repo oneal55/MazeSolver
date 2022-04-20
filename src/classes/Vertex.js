@@ -2,7 +2,7 @@ class Vertex {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.color = "#A5A5A5";
+        this.color = "black";
         this.left = null;
         this.right = null;
         this.top = null;
@@ -48,8 +48,7 @@ class Maze {
             }
         }
 
-        const vertices = grid.reduce((prevVertices, row) => prevVertices.push(...row))
-        this.graph = new Graph(vertices);
+        this.graph = new Graph(grid);
         this.startPoint = null;
         this.goalPoint = null;
         this.search = "None";
@@ -57,3 +56,5 @@ class Maze {
         this.visited = [];
     }
 }
+
+export default Maze;
