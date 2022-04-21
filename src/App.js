@@ -1,6 +1,6 @@
 import './App.css';
 import Maze  from './classes/Vertex'
-import Game from './components/Game.js'
+import Game from './components/Game/Game.js'
 
 function App() {
   return (

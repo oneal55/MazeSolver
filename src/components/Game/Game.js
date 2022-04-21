@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { VertexBlock } from './VertexBlock.js';
+import { VertexBlock } from '../VertexBlock/VertexBlock.js';
 import './Game.css'
 
 export const Game = (props) => {
