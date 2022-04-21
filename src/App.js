@@ -1,19 +1,13 @@
 import './App.css';
-import { useState } from 'react';
-import Maze  from './classes/Vertex';
 import Game from './components/Game/Game.js';
 
 function App() {
-  
-  const [search, setSearch] = useState('None');
-
-  const maze = new Maze(15, 15, 20, search);
   return (
     <div className='mainPage'>
       <Game 
-      game={maze}
-      search={search}
-      setSearch={setSearch}
+      width={5}
+      height={5}
+      cellSize={20}
       />
     </div>
   );

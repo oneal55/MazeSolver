@@ -3,37 +3,37 @@ import './VertexBlock.css'
 
 export const VertexBlock = (props) => {
 
-    const [vertex, setVertex] = useState(props.vertex);
+    const [vertex, setVertex] = useState(props.vertex)
 
     const clickHandler = () => {
         if(props.search == 'None'){
             if(props.clickType == 0){
-                setVertex({...vertex, on: !vertex.on});
-                props.vertex.on = !vertex.on;
-
+                vertex.on = !vertex.on;
+                 setVertex({...vertex, on: vertex.on})
             }
             else if(props.clickType == 1) {
-                setVertex({...vertex, on: true, color: '#07DA63'});
-                props.maze.startPoint = props.vertex;
-                props.vertex.color = '#07DA63';
+                vertex.on = true;
+                vertex.color = '#07DA63';
+                setVertex({...vertex, on: vertex.on, color: vertex.color})
+                props.gameSetter(vertex)
                 props.clickTypeSetter(0);
             }
             else {
-                setVertex({...vertex, on: true, color: '#fe326f'});
-                props.maze.goalPoint = props.vertex;
-                props.vertex.color = '#fe326f';
+                props.gameSetter(vertex)
+                vertex.on = true;
+                vertex.color = '#fe326f';
+                setVertex({...vertex, on: vertex.on, color: vertex.color})
                 props.clickTypeSetter(0);
             }
         }
     };
-
-    useEffect(() => {}, [vertex]);
     
     useEffect(() => {
-        if((props.clickType == 1 && vertex.color == '#07DA63') || (props.clickType == 2 && vertex.color == '#fe326f')) {
-            setVertex({...vertex, color: '#FFF'})
+        if((props.clickType == 1 && props.search == 'None' && vertex.color == '#07DA63')
+        || (props.clickType == 2 && props.search == 'None' && vertex.color == '#fe326f')) {
+            setVertex({...vertex, color: "#FFF"})
         }
-    }, [props.clickType]);
+    }, [props.clickType, vertex]);
 
        const styles = {
             position: "absolute",
