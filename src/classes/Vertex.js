@@ -6,8 +6,20 @@ class Vertex {
         this.left = null;
         this.right = null;
         this.top = null;
-        this.right = null;
+        this.bottom = null;
         this.on = true;
+    }
+
+    seenIn = (dictionary) => {
+        return dictionary[this];
+    }
+
+    addNeighbors = (worklist) => {
+        worklist.push(this.left);
+        worklist.push(this.right);
+        worklist.push(this.bottom);
+        worklist.push(this.top);
+
     }
 }
 
@@ -57,6 +69,29 @@ class Maze {
         this.worklist = [];
         this.visited = [];
         this.cellSize = cellSize;
+        this.interval = 0;
+        this.cameFromEdge = {}
+    }
+
+    search = () => {
+        if (this.search !== "None") {
+            this.interval = setInterval(this.searchOnce, 500);
+        }
+        else {
+            clearInterval(this.interval);
+        }
+    }
+    
+    searchOnce = () => {
+        if (this.search === "Depth-First") {
+            if (this.worklist.length > 0) {
+                let node = (this.worklist.shift());
+                node.color = "#40e0d0"
+                if (!node.seenIn(this.dictionary)) {
+                    node.addNeighbors(this.worklist);
+                }
+            }
+        }
     }
 }
 
