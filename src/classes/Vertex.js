@@ -18,7 +18,7 @@ class Graph {
 }
 
 class Maze {
-    constructor(width, height) {
+    constructor(width, height, cellSize) {
         let grid = [];
         for (let i = 0; i < height; i++) {
             let row = [];
@@ -48,12 +48,15 @@ class Maze {
             }
         }
 
+        this.width = width;
+        this.height = height;
         this.graph = new Graph(grid);
         this.startPoint = null;
         this.goalPoint = null;
         this.search = "None";
         this.worklist = [];
         this.visited = [];
+        this.cellSize = cellSize;
     }
 }
 

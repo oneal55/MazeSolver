@@ -5,7 +5,6 @@ export const VertexBlock = (props) => {
 
     const [vertex, setVertex] = useState(props.vertex);
 
-
     const clickHandler = () => {
         setVertex({...vertex, on: !vertex.on});
 
@@ -17,12 +16,13 @@ export const VertexBlock = (props) => {
        const styles = {
             position: "absolute",
             display: "inline-block",
-            top: vertex.y * props.cellSize + (2 * vertex.y),
-            left: vertex.x * props.cellSize + (2 * vertex.x),
+            left: (vertex.x * props.cellSize) + (2 * vertex.x),
+            top: (vertex.y * props.cellSize) + (2 * vertex.y),
             background: vertex.on ? vertex.color : 'black',
             width: props.cellSize + 'px',
             height: props.cellSize + 'px'
         };
+
     return (
         <div className="cell"
         onClick = {() => clickHandler()}
