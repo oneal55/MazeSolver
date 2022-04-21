@@ -1,0 +1,39 @@
+.btnP {
+    color: #FFF;
+    padding: 4px;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.btnDiv {
+    border-radius: 8px;
+    display: flex;
+    height: 2.5em;
+    align-items: center;
+    transition: 0.5s;
+    transition-property: box-shadow;
+    cursor: pointer;
+}
+
+#start {
+    background: #07DA63;
+    box-shadow: 0 0 25px #07DA63;
+}
+
+#end {
+    background: #fe326f;
+    box-shadow: 0 0 25px #fe326f;
+}
+
+#start:hover {
+    box-shadow: 0 0 5px #07DA63,
+              0 0 25px #07DA63,
+              0 0 50px #07DA63,
+              0 0 100px #07DA63;
+}
+
+#end:hover {
+    box-shadow: 0 0 5px #fe326f,
+              0 0 25px #fe326f,
+              0 0 50px #fe326f,
+              0 0 100px #fe326f;
+}

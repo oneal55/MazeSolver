@@ -5,7 +5,7 @@ import Game from './components/Game/Game.js'
 function App() {
   return (
     <div className='mainPage'>
-      <Game game = {new Maze(15, 3, 20)}/>
+      <Game game = {new Maze(15, 15, 20)}/>
     </div>
   );
 }

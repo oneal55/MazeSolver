@@ -3,4 +3,15 @@
     display: inline;
     position: absolute;
     border: 1px solid black;
+    transition: background 0.25s;
+}
+
+.cellStartHover:hover {
+    border: 1px solid black;
+    background: #07DA63 !important;
+}
+
+.cellEndHover:hover {
+    border: 1px solid black;
+    background: #fe326f !important;
 }

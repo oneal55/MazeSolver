@@ -6,12 +6,26 @@ export const VertexBlock = (props) => {
     const [vertex, setVertex] = useState(props.vertex);
 
     const clickHandler = () => {
-        setVertex({...vertex, on: !vertex.on});
-
+        if(props.clickType == 0){
+            setVertex({...vertex, on: !vertex.on});
+        }
+        else if(props.clickType == 1) {
+            setVertex({...vertex, on: true, color: '#07DA63'})
+            props.clickTypeSetter(0);
+        }
+        else {
+            setVertex({...vertex, on: true, color: '#fe326f'})
+            props.clickTypeSetter(0);
+        }
     };
 
     useEffect(() => {}, [vertex]);
     
+    useEffect(() => {
+        if((props.clickType == 1 && vertex.color == '#07DA63') || (props.clickType == 2 && vertex.color == '#fe326f')) {
+            setVertex({...vertex, color: '#FFF'})
+        }
+    }, [props.clickType]);
 
        const styles = {
             position: "absolute",
@@ -24,7 +38,7 @@ export const VertexBlock = (props) => {
         };
 
     return (
-        <div className="cell"
+        <div className={props.clickType == 0 ? "cell" : props.clickType == 1 ? "cellStartHover cell" : "cellEndHover cell"}
         onClick = {() => clickHandler()}
         style={styles}>
         </div>
