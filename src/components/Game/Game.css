@@ -24,6 +24,11 @@
     box-shadow: 0 0 25px #fe326f;
 }
 
+#search {
+    background: #FFE800;
+    box-shadow: 0 0 25px #FFE800;
+}
+
 #start:hover {
     box-shadow: 0 0 5px #07DA63,
               0 0 25px #07DA63,
@@ -36,4 +41,11 @@
               0 0 25px #fe326f,
               0 0 50px #fe326f,
               0 0 100px #fe326f;
+}
+
+#search:hover {
+    box-shadow: 0 0 5px #FFE800,
+              0 0 25px #FFE800,
+              0 0 50px #FFE800,
+              0 0 100px #FFE800;
 }

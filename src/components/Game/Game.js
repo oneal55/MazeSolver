@@ -7,7 +7,7 @@ export const Game = (props) => {
     // 0: click and cell becomes a wall
     // 1: click and cell becomes beginning cell
     // 2: click and cell becomes end cell
-    const [cellClickType, setCellClickType] = useState(0)
+    const [cellClickType, setCellClickType] = useState(0);
 
     const styles = {
         position: 'relative',
@@ -18,10 +18,17 @@ export const Game = (props) => {
     };
 
     const selectCell = (clickType) => {
-        setCellClickType(clickType);
+        if(props.search === 'None'){
+            setCellClickType(clickType);
+        }
     };
 
-    useEffect(() => {}, [cellClickType]);
+    const startSearch = () => {
+        console.log("hola");
+        props.setSearch('Depth-First');
+    };
+
+    useEffect(() => {console.log("useeffect called " + props.search)}, [cellClickType, props.search]);
 
     const vertices = mazeGame.graph.vertices;
     return (    
@@ -37,7 +44,11 @@ export const Game = (props) => {
                     cellSize={mazeGame.cellSize}
                     clickType={cellClickType}
                     clickTypeSetter={selectCell}
+                    search={props.search}
                 />)))}
+            </div>
+            <div style={{display: 'flex', marginTop: '30px', justifyContent: 'center'}}>
+                <div onClick={() => startSearch()} className={"btnDiv"} id={"search"}><p className={"btnP"}>Search</p></div>
             </div>
         </div>
     );

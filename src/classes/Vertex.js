@@ -53,10 +53,14 @@ class Maze {
         this.graph = new Graph(grid);
         this.startPoint = null;
         this.goalPoint = null;
-        this.search = "None";
         this.worklist = [];
         this.visited = [];
         this.cellSize = cellSize;
+    }
+
+    updateSearch = (input) => {
+        console.log("i was called");
+        this.search = input;
     }
 }
 
