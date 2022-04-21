@@ -26,6 +26,7 @@ export const Game = (props) => {
     const startSearch = () => {
         console.log("hola");
         props.setSearch('Depth-First');
+        props.game.startSearch();
     };
 
     useEffect(() => {console.log("useeffect called " + props.search)}, [cellClickType, props.search]);
@@ -45,6 +46,7 @@ export const Game = (props) => {
                     clickType={cellClickType}
                     clickTypeSetter={selectCell}
                     search={props.search}
+                    maze={mazeGame}
                 />)))}
             </div>
             <div style={{display: 'flex', marginTop: '30px', justifyContent: 'center'}}>

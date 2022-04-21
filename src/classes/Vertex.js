@@ -10,15 +10,27 @@ class Vertex {
         this.on = true;
     }
 
-    seenIn = (dictionary) => {
-        return dictionary[this];
+    seenIn = (dictionary, visited) => {
+        return visited.includes(this);
     }
 
-    addNeighbors = (worklist) => {
-        worklist.push(this.left);
-        worklist.push(this.right);
-        worklist.push(this.bottom);
-        worklist.push(this.top);
+    addNeighbors = (worklist, cameFromEdge, visited) => {
+        if (this.left != null && this.left.on && !this.left.seenIn(cameFromEdge, visited)) {
+            worklist.push(this.left);
+            cameFromEdge[this.left] = this;
+        }
+        if (this.right != null && this.right.on && !this.right.seenIn(cameFromEdge, visited)) {
+            worklist.push(this.right);
+            cameFromEdge[this.right] = this;
+        }
+        if (this.bottom != null && this.bottom.on && !this.bottom.seenIn(cameFromEdge, visited)) {
+            worklist.push(this.bottom);
+            cameFromEdge[this.bottom] = this;
+        }
+        if (this.top != null && this.top.on && !this.top.seenIn(cameFromEdge, visited)) {
+            worklist.push(this.top);
+            cameFromEdge[this.top] = this;
+        }
 
     }
 }
@@ -30,7 +42,7 @@ class Graph {
 }
 
 class Maze {
-    constructor(width, height, cellSize) {
+    constructor(width, height, cellSize, search) {
         let grid = [];
         for (let i = 0; i < height; i++) {
             let row = [];
@@ -65,6 +77,7 @@ class Maze {
         this.graph = new Graph(grid);
         this.startPoint = null;
         this.goalPoint = null;
+        this.search = search;
         this.worklist = [];
         this.visited = [];
         this.cellSize = cellSize;
@@ -72,7 +85,7 @@ class Maze {
         this.cameFromEdge = {}
     }
 
-    search = () => {
+    searchMaze = () => {
         if (this.search !== "None") {
             this.interval = setInterval(this.searchOnce, 500);
         }
@@ -84,11 +97,19 @@ class Maze {
     searchOnce = () => {
         if (this.search === "Depth-First") {
             if (this.worklist.length > 0) {
+                let node = (this.worklist.pop());
+                node.color = "#40e0d0"
+                    node.addNeighbors(this.worklist, this.cameFromEdge, this.visited);
+                    this.visited.push(node);
+            }
+        }
+
+        if (this.search === "Breadth-First") {
+            if (this.worklist.length > 0) {
                 let node = (this.worklist.shift());
                 node.color = "#40e0d0"
-                if (!node.seenIn(this.dictionary)) {
-                    node.addNeighbors(this.worklist);
-                }
+                    node.addNeighbors(this.worklist, this.cameFromEdge, this.visited);
+                    this.visited.push(node);
             }
         }
     }
@@ -96,6 +117,15 @@ class Maze {
     updateSearch = (input) => {
         console.log("i was called");
         this.search = input;
+    }
+
+    startSearch = () => {
+        this.worklist.push(this.startPoint);
+        this.search = "Depth-First";
+        for (let i = 0; i < 35; i++) {
+            this.searchOnce();
+
+        }
     }
 }
 

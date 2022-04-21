@@ -9,13 +9,19 @@ export const VertexBlock = (props) => {
         if(props.search == 'None'){
             if(props.clickType == 0){
                 setVertex({...vertex, on: !vertex.on});
+                props.vertex.on = !vertex.on;
+
             }
             else if(props.clickType == 1) {
-                setVertex({...vertex, on: true, color: '#07DA63'})
+                setVertex({...vertex, on: true, color: '#07DA63'});
+                props.maze.startPoint = props.vertex;
+                props.vertex.color = '#07DA63';
                 props.clickTypeSetter(0);
             }
             else {
-                setVertex({...vertex, on: true, color: '#fe326f'})
+                setVertex({...vertex, on: true, color: '#fe326f'});
+                props.maze.goalPoint = props.vertex;
+                props.vertex.color = '#fe326f';
                 props.clickTypeSetter(0);
             }
         }
