@@ -8,21 +8,22 @@ export const VertexBlock = (props) => {
     const clickHandler = () => {
         if(props.search == 'None'){
             if(props.clickType == 0){
-                vertex.on = !vertex.on;
-                 setVertex({...vertex, on: vertex.on})
+                let vertexClone = {...vertex, on: !vertex.on};
+                props.reconstruct(vertexClone);
+                setVertex(vertexClone);
             }
             else if(props.clickType == 1) {
-                vertex.on = true;
-                vertex.color = '#07DA63';
-                setVertex({...vertex, on: vertex.on, color: vertex.color})
-                props.gameSetter(vertex)
+                let vertexClone = {...vertex, on : true, color: '#07DA63'};
+                props.reconstruct(vertexClone);
+                setVertex(vertexClone)
+                props.gameSetter(vertexClone)
                 props.clickTypeSetter(0);
             }
             else {
-                props.gameSetter(vertex)
-                vertex.on = true;
-                vertex.color = '#fe326f';
-                setVertex({...vertex, on: vertex.on, color: vertex.color})
+                let vertexClone = {...vertex, on : true, color: '#fe326f'};
+                props.reconstruct(vertexClone);
+                setVertex(vertexClone)
+                props.gameSetter(vertexClone)
                 props.clickTypeSetter(0);
             }
         }

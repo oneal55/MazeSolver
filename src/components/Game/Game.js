@@ -1,3 +1,5 @@
+import { findByAltText } from '@testing-library/react';
+import { clear } from '@testing-library/user-event/dist/clear';
 import { useState, useEffect } from 'react';
 import { VertexBlock } from '../VertexBlock/VertexBlock.js';
 import './Game.css';
@@ -5,14 +7,14 @@ import './Game.css';
 export const Game = (props) => {
 
     const init = () => {
-        let grid = []
+        let grid = [];
         for (var i = 0; i < props.height; i++) {
             let row = [];
             for (var j = 0; j < props.width; j++) {
-                row.push(
-                    {x:j, y:i,
-                    on:true, color:'white',
-                    top:null, right:null, bottom:null, left:null});
+                let vertex = {x:j, y:i,
+                    on:true, color:'white', cameFrom: null,
+                    top:null, right:null, bottom:null, left:null};
+                row.push(vertex);
                 }
             grid.push(row);
         }
@@ -39,14 +41,11 @@ export const Game = (props) => {
     }
 
     const [mazeGrid, setMazeGrid] = useState(init());
-
-
     const [startPoint, setStartPointState] = useState({point: null});
     const [endPoint, setEndPointState] = useState({point: null});
     const [searchMode, setSearchModeState] = useState("None");
     const [worklist, setWorkListState] = useState([]);
-    const [visited, setVisitedState] = useState([]);
-    const [cameFromEdge, setCameFromEdgeState] = useState({})
+    const [searchStarted, setSearchStarted] = useState(false);
 
     // 0: click and cell becomes a wall
     // 1: click and cell becomes beginning cell
@@ -76,52 +75,170 @@ export const Game = (props) => {
         }
     };
 
+    const reconstruct = (vertex) => {
+        if (vertex.left != null) {
+            vertex.left.right = vertex;
+        }
+        if (vertex.right != null) {
+            vertex.right.left = vertex;
+        }
+        if (vertex.top != null) {
+            vertex.top.bottom = vertex;
+        }
+        if (vertex.bottom != null) {
+        vertex.bottom.top = vertex;
+        }
+    }
     const startSearch = () => {
         let list = [];
         list.push(startPoint);
         setWorkListState(list);
         setSearchModeState("Breadth-First");
+        setSearchStarted(true);
     }
-    useEffect(() => {if (worklist.length > 0) searchOnce()}, [worklist])
 
     const searchOnce = () => {
         let worklistclone = [...worklist];
-        let newCameFromEdge = {...cameFromEdge}
-        let newVisited = [...visited];
             if (worklist.length > 0) {
                 let node;
                 if (searchMode === "Depth-First") {
                     node = (worklistclone.pop());
                 }
-                if (searchMode === "Breadth-First") {
+                else {
                     node = (worklistclone.shift());
                 }
-                console.log("x: " + node.x + " y:" + node.y + " color:" + node.color);
                 node.color = "#40e0d0";
-                newVisited.push(node);
 
-            if (node.left != null && node.left.on && !newVisited.includes(node.left)) {
-                worklistclone.push(node.left);
-                newCameFromEdge[node.left] = node;
-            }
-            if (node.right != null && node.right.on && !newVisited.includes(node.right)) {
-                worklistclone.push(node.right);
-                newCameFromEdge[node.right] = node;
-            }
-            if (node.bottom != null && node.bottom.on && !newVisited.includes(node.bottom)) {
-                worklistclone.push(node.bottom);
-                newCameFromEdge[node.bottom] = node;
-            }
-            if (node.top != null && node.top.on && !newVisited.includes(node.top)) {
-                worklistclone.push(node.top);
-                newCameFromEdge[node.top] = node;
-            }
-            setWorkListState(worklistclone);
-            setCameFromEdgeState(newCameFromEdge);
-            setVisitedState(newVisited);
+                if (node === endPoint) {
+                    setSearchModeState("Reconstruct");
+                }
 
+                else {
+                    let newNodes = [];
+                    if (node.left != null && node.left.on && node.left.cameFrom === null) {
+                        newNodes.push(node.left);
+                        node.left.cameFrom = node;
+                    }
+                    if (node.right != null && node.right.on && node.right.cameFrom === null) {
+                        newNodes.push(node.right);
+                        node.right.cameFrom = node;
+                    }
+                    if (node.bottom != null && node.bottom.on && node.bottom.cameFrom === null) {
+                        newNodes.push(node.bottom);
+                        node.bottom.cameFrom = node;
+                    }
+                    if (node.top != null && node.top.on && node.top.cameFrom === null) {
+                        newNodes.push(node.top);
+                        node.top.cameFrom = node;
+                    }
+                    newNodes.sort(() => Math.random() - 0.5)
+                    worklistclone.push(...newNodes);
+                    setWorkListState(worklistclone);
+                }
         }
     }
+
+    const generateEdges = (vertices) => {
+        let edges = [];
+        for (let i = 1; i < vertices.length; i += 1) {
+            let row = vertices[i];
+            for (let j = 1; j < row.length - 1; j += 1) {
+                if (j + 2 < vertices[i].length) {
+                    let edge = {from :vertices[i][j],
+                                to :vertices[i][j + 2],
+                                weight :Math.random(),
+                                right: true}
+                                edges.push(edge);
+                }
+            }
+        }
+
+        for (let i = 1; i < vertices.length - 1; i += 1) {
+            let row = vertices[i];
+            for (let j = 1; j < row.length; j += 1) {
+
+                if (i + 2 < vertices.length) {
+                    let edge = {from :vertices[i][j],
+                        to :vertices[i+ 2][j],
+                        weight :Math.random(),
+                        bottom: true}
+                        edges.push(edge);
+                }
+            }
+        }
+        edges.sort((vertex1, vertex2) => (vertex1.weight - vertex2.weight));
+        return edges;
+    }
+
+    const kruskals = () => {
+        let mazeGridClone = [...mazeGrid];
+        let worklist = generateEdges(mazeGridClone);
+
+        let edgesInTree = [];
+        let representatives = {};
+        for(let i = 0; i < mazeGridClone.length; i++) {
+            for (let j = 0; j < mazeGridClone[0].length; j++) {
+                representatives[mazeGridClone[i][j].x + '' + mazeGridClone[i][j].y] = mazeGridClone[i][j];
+            }
+        }
+        let verticesSize = (Math.ceil(mazeGrid.length / 2) * Math.ceil(mazeGrid[0].length / 2));
+        while(edgesInTree.length < verticesSize - 1 && worklist.length > 0) {
+            let currentEdge = worklist.shift();
+            let repFrom = find(representatives, currentEdge.from);
+            let repTo = find(representatives, currentEdge.to);
+
+            if (repFrom === repTo) {
+
+            }
+            else {
+                edgesInTree.push(currentEdge);
+                
+                union(representatives, repFrom, repTo);
+            }
+        }
+
+        edgesInTree.forEach(insertEdge);
+        setMazeGrid(mazeGridClone);
+    }
+
+    const insertEdge = (edge) => {
+        if (edge.bottom) {
+            console.log("working");
+            edge.from.bottom.on = false;
+        }
+
+        if (edge.right) {
+            console.log("working");
+            edge.from.right.on = false;
+        }
+    }
+
+    const find = (representatives, vertex) => {
+        if (get(representatives, vertex) === vertex) {
+            return vertex;
+        }
+        else {
+            return find(representatives, get(representatives, vertex));
+        }
+    }
+
+    const get = (representatives, vertex) => {
+        return representatives[vertex.x + '' + vertex.y];
+    }
+
+    const union = (representatives, vertexA, vertexB) => {
+        representatives[vertexA.x + '' + vertexA.y] = vertexB;
+    }
+
+    let validSearchModes = ["Breadth-First", "Depth-First"]
+    setInterval(() => {
+        if (searchStarted && validSearchModes.includes(searchMode)) {
+            console.log('Running');
+            searchOnce();
+
+        }
+    }, 1000)
+
 
     return (   
         <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column'}}>
@@ -137,11 +254,14 @@ export const Game = (props) => {
                   cellSize={props.cellSize}
                   clickType= {cellClickType}
                   clickTypeSetter={selectCell}
-                  gameSetter={gameSetter} />)))}
+                  gameSetter={gameSetter}
+                  reconstruct={reconstruct}
+                  />)))}
              
             </div>
             <div style={{display: 'flex', marginTop: '30px', justifyContent: 'center'}}>
                 <div onClick={() => startSearch()} className={"btnDiv"} id={"search"}><p className={"btnP"}>Search</p></div>
+                <div style = {{marginLeft: '30px'}} onClick={() => kruskals()} className={"btnDiv"} id={"generate"}><p className={"btnP"}>Search</p></div>
             </div>
         </div>
     );

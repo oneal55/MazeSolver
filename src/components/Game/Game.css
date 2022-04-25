@@ -29,6 +29,11 @@
     box-shadow: 0 0 25px #FFE800;
 }
 
+#generate {
+    background: #1bc6ff;
+    box-shadow: 0 0 25px #1bc6ff;
+}
+
 #start:hover {
     box-shadow: 0 0 5px #07DA63,
               0 0 25px #07DA63,
@@ -44,8 +49,8 @@
 }
 
 #search:hover {
-    box-shadow: 0 0 5px #FFE800,
-              0 0 25px #FFE800,
-              0 0 50px #FFE800,
-              0 0 100px #FFE800;
+    box-shadow: 0 0 5px #1bc6ff,
+              0 0 25px #1bc6ff,
+              0 0 50px #1bc6ff,
+              0 0 100px #1bc6ff;
 }

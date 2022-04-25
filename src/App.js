@@ -5,9 +5,9 @@ function App() {
   return (
     <div className='mainPage'>
       <Game 
-      width={5}
-      height={5}
-      cellSize={20}
+      width={30}
+      height={30}
+      cellSize={10}
       />
     </div>
   );
