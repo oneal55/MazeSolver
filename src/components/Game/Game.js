@@ -1,5 +1,3 @@
-import { findByAltText } from '@testing-library/react';
-import { clear } from '@testing-library/user-event/dist/clear';
 import { useState, useEffect } from 'react';
 import { VertexBlock } from '../VertexBlock/VertexBlock.js';
 import './Game.css';
@@ -12,7 +10,7 @@ export const Game = (props) => {
             let row = [];
             for (var j = 0; j < props.width; j++) {
                 let vertex = {x:j, y:i,
-                    on:true, color:'white', cameFrom: null,
+                    on:true, color:'white',
                     top:null, right:null, bottom:null, left:null};
                 row.push(vertex);
                 }
@@ -89,11 +87,12 @@ export const Game = (props) => {
         vertex.bottom.top = vertex;
         }
     }
+
     const startSearch = () => {
         let list = [];
         list.push(startPoint);
         setWorkListState(list);
-        setSearchModeState("Breadth-First");
+        setSearchModeState("Depth-First");
         setSearchStarted(true);
     }
 
@@ -140,9 +139,9 @@ export const Game = (props) => {
 
     const generateEdges = (vertices) => {
         let edges = [];
-        for (let i = 1; i < vertices.length; i += 1) {
+        for (let i = 0; i < vertices.length; i += 1) {
             let row = vertices[i];
-            for (let j = 1; j < row.length - 1; j += 1) {
+            for (let j = 0; j < row.length; j += 1) {
                 if (j + 2 < vertices[i].length) {
                     let edge = {from :vertices[i][j],
                                 to :vertices[i][j + 2],
@@ -153,9 +152,9 @@ export const Game = (props) => {
             }
         }
 
-        for (let i = 1; i < vertices.length - 1; i += 1) {
+        for (let i = 0; i < vertices.length - 1; i += 1) {
             let row = vertices[i];
-            for (let j = 1; j < row.length; j += 1) {
+            for (let j = 0; j < row.length; j += 1) {
 
                 if (i + 2 < vertices.length) {
                     let edge = {from :vertices[i][j],
@@ -172,18 +171,18 @@ export const Game = (props) => {
 
     const kruskals = () => {
         let mazeGridClone = [...mazeGrid];
-        let worklist = generateEdges(mazeGridClone);
+        let kruskalWorklist = generateEdges(mazeGridClone);
 
         let edgesInTree = [];
-        let representatives = {};
+        let representatives = new Map();
         for(let i = 0; i < mazeGridClone.length; i++) {
             for (let j = 0; j < mazeGridClone[0].length; j++) {
-                representatives[mazeGridClone[i][j].x + '' + mazeGridClone[i][j].y] = mazeGridClone[i][j];
+                representatives.set(mazeGridClone[i][j].x + '' + mazeGridClone[i][j].y, mazeGridClone[i][j]);
             }
         }
-        let verticesSize = (Math.ceil(mazeGrid.length / 2) * Math.ceil(mazeGrid[0].length / 2));
-        while(edgesInTree.length < verticesSize - 1 && worklist.length > 0) {
-            let currentEdge = worklist.shift();
+        let verticesSize = (Math.ceil(mazeGrid.length * mazeGrid[0].length * (1/3)));
+        while(edgesInTree.length < verticesSize - 1 && kruskalWorklist.length > 0) {
+            let currentEdge = kruskalWorklist.shift();
             let repFrom = find(representatives, currentEdge.from);
             let repTo = find(representatives, currentEdge.to);
 
@@ -223,22 +222,34 @@ export const Game = (props) => {
     }
 
     const get = (representatives, vertex) => {
-        return representatives[vertex.x + '' + vertex.y];
+        return representatives.get(vertex.x + '' + vertex.y);
     }
 
     const union = (representatives, vertexA, vertexB) => {
-        representatives[vertexA.x + '' + vertexA.y] = vertexB;
+        representatives.set(get(representatives, vertexA), vertexB);
     }
 
-    let validSearchModes = ["Breadth-First", "Depth-First"]
-    setInterval(() => {
-        if (searchStarted && validSearchModes.includes(searchMode)) {
-            console.log('Running');
-            searchOnce();
+    const reset = () => {
+        setMazeGrid(init());
+        setWorkListState([]);
+        setSearchStarted(false);
+        setStartPointState(null);
+        setEndPointState(null);
+        setSearchModeState("None");
+        setCellClickType(0);
+    }
 
-        }
-    }, 1000)
+    useEffect(() => {console.log(mazeGrid) }, [mazeGrid])
 
+    let validSearchModes = ["Breadth-First", "Depth-First"];
+        
+        useEffect(() => {
+            const interval = setInterval(() => {if (searchStarted && validSearchModes.includes(searchMode)) {
+                console.log("Running");
+                searchOnce();
+            }}, 25);
+            return () => clearInterval(interval);
+        });
 
     return (   
         <div style={{display: 'flex', justifyContent: 'center', flexDirection: 'column'}}>
@@ -261,7 +272,9 @@ export const Game = (props) => {
             </div>
             <div style={{display: 'flex', marginTop: '30px', justifyContent: 'center'}}>
                 <div onClick={() => startSearch()} className={"btnDiv"} id={"search"}><p className={"btnP"}>Search</p></div>
-                <div style = {{marginLeft: '30px'}} onClick={() => kruskals()} className={"btnDiv"} id={"generate"}><p className={"btnP"}>Search</p></div>
+                <div style = {{marginLeft: '30px'}} onClick={() => kruskals()} className={"btnDiv"} id={"generate"}><p className={"btnP"}>Generate Walls</p></div>
+                <div style = {{marginLeft: '30px'}} onClick={() => reset()} className={"btnDiv"} id={"generate"}><p className={"btnP"}>Reset</p></div>
+
             </div>
         </div>
     );
